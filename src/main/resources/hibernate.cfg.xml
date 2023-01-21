@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Connection settings -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://babar.db.elephantsql.com/ehctpjci</property>
+        <property name="hibernate.connection.username">ehctpjci</property>
+        <property name="hibernate.connection.password">V2jHoWhXqw9y_DMuznaZgr4WIJI2DbDo</property>
+
+        <property name="dialect">org.hibernate.dialect.PostgreSQL9Dialect</property>
+
+        <!-- Print the executed SQL to stdout -->
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+
+        <!-- Annotated entity classes -->
+        <mapping class ="entities.Book" />
+        <mapping class ="entities.Author" />
+        <mapping class ="entities.Client" />
+        <mapping class ="entities.Rent" />
+
+    </session-factory>
+</hibernate-configuration>
