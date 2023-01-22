@@ -326,7 +326,6 @@ public class Book {
     public static void searchBooks() {
 
         while (true) {
-            session.beginTransaction();
             System.out.println("Enter ISBN or title of the book to search:");
             String search = scanner.nextLine();
             List<Book> books = session.createQuery("from book").list();
