@@ -181,8 +181,6 @@ public class Book {
 
     static Scanner sc = new Scanner(System.in);
 
-    // Users should be able to search and view books in the library's collection by entering the ISBN or title of the book.
-
 
 
     // Users should be able to check out and return books by entering the ISBN of the book,
@@ -196,10 +194,7 @@ public class Book {
             System.out.println("Sorry, this book is not checked out so it cannot be placed on hold.");
         }
 
-
      */
-
-// Users should be able to check out and return books by entering the ISBN of the book, with the option to place a hold on a book if it is currently checked out.
 
 
     public boolean isBookAvailable(int qty) {
@@ -326,9 +321,12 @@ public class Book {
         }
     }
 
+    // Users should be able to search and view books in the library's collection by entering the ISBN or title of the book.
+
     public static void searchBooks() {
 
         while (true) {
+            session.beginTransaction();
             System.out.println("Enter ISBN or title of the book to search:");
             String search = scanner.nextLine();
             List<Book> books = session.createQuery("from book").list();
