@@ -1,10 +1,11 @@
-package enities;
+package entities;
 
 
 import database.Database;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import menu.Menu;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -17,6 +18,7 @@ import java.util.Scanner;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int c_id;
@@ -32,25 +34,7 @@ public class Client {
         this.email = email;
     }
 
-    static Scanner scanner = new Scanner(System.in);
     static Session session = Database.getHibSesh();
-
-
-    public static void addClientByAdmin(Client client) {
-        session.beginTransaction();
-        Transaction trans = session.getTransaction();
-        try {
-
-            session.persist(client);
-            session.flush();
-            trans.commit();
-
-        } catch (Exception e) {
-            trans.rollback();
-            e.printStackTrace();
-        }
-
-    }
 
     public static void updateClientByAdmin() {
         Scanner scanner = new Scanner(System.in);
@@ -71,7 +55,6 @@ public class Client {
         String email = scanner.next();
 
         System.out.println("Client with the inserted id will be updated. Please hold for further information...");
-
 
         try {
             client.setName(name);
@@ -188,7 +171,7 @@ public class Client {
     }
 
     public static void listOfRentedBooksByClientId() {
-
+        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Hello, wonderful client! Please enter your client id: ");
         int client_id = scanner.nextInt();
@@ -213,7 +196,20 @@ public class Client {
         System.out.println("Thank you for viewing the list!");
     }
 
+    public static void adminLogin() {
 
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("You are trying to enter the admin menu. For that you need to enter the password:");
+
+        String password = scanner.nextLine();
+
+        if(password.equals("greenlibrary123")) {
+            Menu.adminMenu();
+        } else {
+            System.out.println("Sorry, the password is wrong.");
+        }
+        Menu.mainMenu();
+    }
 }
-
 

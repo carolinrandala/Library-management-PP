@@ -1,13 +1,19 @@
 package org.example;
 
-import enities.Book;
-import org.hibernate.Session;
+import entities.Book;
+import entities.Client;
+import entities.Rent;
+
 
 public class Main {
     public static void main(String[] args) {
 
-
         //Book.issueBookByIsbn();
-        Book.searchBooks();
+        //Book.listBook();
+        //Book.searchBooks();
+        //Book.returnBookByIsbn();
+        Rent.listOfRentedBooks();
+        //Client.addNewClientByClient();
+
     }
 }

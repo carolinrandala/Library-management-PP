@@ -1,4 +1,4 @@
-package enities;
+package entities;
 
 import database.Database;
 import lombok.AllArgsConstructor;
@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rent {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int r_id;
@@ -114,6 +115,4 @@ public class Rent {
         System.out.println("Thank you for viewing the list!");
     }
 
-
 }
-
