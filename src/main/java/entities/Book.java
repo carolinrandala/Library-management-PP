@@ -9,9 +9,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Scanner;
@@ -36,7 +33,6 @@ public class Book {
     @Column(name = "qty_in_library")
     private int qtyInLibrary;
 
-
     @OneToOne
     @JoinColumn(name = "author_id")
     private Author author;
@@ -52,45 +48,39 @@ public class Book {
         this.isAvailable = isAvailable;
     }
 
-
     public static void addBook() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Hi, you wonderful admin! You are here to add a book");
-
         System.out.println("Enter the title of the book:");
         String title = scanner.nextLine();
-
-
         System.out.println("Enter the category of the book:");
-        scanner.next();
         String category = scanner.nextLine();
-
-
         System.out.println("Enter the author of the new book:");
-        scanner.next();
-        String authorName = scanner.nextLine();
-
-
+        String author_name = scanner.nextLine();
         System.out.println("Enter the quantity of this book:");
         int qty = scanner.nextInt();
-
         session.beginTransaction();
         Transaction trans = session.getTransaction();
-
         try {
-            Author author = new Author();
-            author.setAuthorName(authorName);
-            session.persist(author);
+            Author author = (Author) session.createQuery("from author where author_name = :author_name")
+                    .setParameter("author_name", author_name)
+                    .uniqueResult();
+            if (author == null) {
+                author = new Author();
+                author.setAuthorName(author_name);
+                session.persist(author);
+            }
             Book book = new Book();
             book.setTitle(title);
             book.setCategory(category);
             book.setAuthor(author);
             book.setAvailable(true);
             book.setQtyInLibrary(qty);
-
             session.persist(book);
             session.flush();
             trans.commit();
+            System.out.println("Thank you for adding new book to our library!");
+            System.out.println("Info about new book is: " + session.get(Book.class, book.getB_id()));
         } catch (Exception e) {
             trans.rollback();
             e.printStackTrace();
@@ -123,7 +113,6 @@ public class Book {
         boolean availability = scanner.nextBoolean();
 
         System.out.println("Book with the inserted id will be updated. Please hold for further information...");
-
 
         try {
             book.setTitle(title);
@@ -166,7 +155,6 @@ public class Book {
         System.out.println("Book with the id: " + isbn + "is deleted. Thank you!");
     }
 
-    // Collections can be used to store the books in the library's collection.
     public static void listBook() {
         System.out.println("Here are the list of books we have in our library:");
 
@@ -185,36 +173,25 @@ public class Book {
 
     static Scanner sc = new Scanner(System.in);
 
-    // Users should be able to search and view books in the library's collection by entering the ISBN
-    // or title of the book.
-
-
-    // Admins should be able to add, update, and delete books from the collection,
-    // as well as manage user accounts via the console interface.
-
-
-    // Users should be able to check out and return books by entering the ISBN of the book,
-    // with the option to place a hold on a book if it is currently checked out.
-
-
     public boolean isBookAvailable(int qty) {
-
-        if (this.qtyInLibrary > 0 || this.qtyInLibrary > qty) {
-            return true;
-        } else {
-            System.out.println("Sorry this book is out of stock at the moment. Come back later!");
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Book> query = builder.createQuery(Book.class);
+        Root<Book> root = query.from(Book.class);
+        query.select(root)
+                .where(builder.equal(root.get("b_id"), this.b_id));
+        List<Book> books = session.createQuery(query).getResultList();
+        if (books.size() == 0) {
+            System.out.println("This book does not exist. Please enter a valid ISBN.");
             return false;
+        } else {
+            if (this.qtyInLibrary > 0 || this.qtyInLibrary > qty) {
+                return true;
+            } else {
+                System.out.println("Sorry this book is out of stock at the moment. Come back later!");
+                return false;
+            }
         }
     }
-
-
-
-
-
-
-
-
-
 
     public static void returnBookByIsbn() {
         Scanner scanner = new Scanner(System.in);
@@ -230,13 +207,13 @@ public class Book {
 
         session.beginTransaction();
         Book book = session.get(Book.class, bk);
-        if(book == null) {
-            System.out.println("Book with ISBN "+bk+" doesn't exist.");
+        if (book == null) {
+            System.out.println("Book with ISBN " + bk + " doesn't exist.");
             return;
         }
         Client client = session.get(Client.class, client_id);
-        if(client == null) {
-            System.out.println("Client with ID "+client_id+" doesn't exist.");
+        if (client == null) {
+            System.out.println("Client with ID " + client_id + " doesn't exist.");
             return;
         }
         try {
@@ -258,75 +235,19 @@ public class Book {
                     }
                 }
             }
-
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
-        System.out.println("The book you rented is returned! Thank you!");
 
+        System.out.println("The book you rented is returned! Thank you!");
+        System.out.println("Enter 0 to exit or any other key to continue search:");
         int option = scanner.nextInt();
         if (option == 0) {
             System.exit(0);
-        }
-
-    }
-
-
-
-    /*
-    public static void returnBookByIsbn() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Enter your id:");
-        int id = scanner.nextInt();
-
-        System.out.println("Enter a book's isbn to return:");
-        int bk = scanner.nextInt();
-
-        System.out.println("How many books you will return?");
-        int qty = scanner.nextInt();
-
-        session.beginTransaction();
-        Book book = session.get(Book.class, bk);
-        Client client = session.get(Client.class, id);
-
-        try {
-            Rent rent = session.get(Rent.class, bk);
-            rent.setBook(book);
-            rent.setClient(client);
-            book.setQtyInLibrary(book.qtyInLibrary + qty);
-            rent.setReturned(true);
-            session.update(rent);
-            session.merge(book);
-            session.merge(client);
-            session.flush();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            System.out.println("Something went wrong. Try again or go back to the main menu");
-            System.out.println("Press 1 to start again or 0 to go back to the main menu");
-            int option = scanner.nextInt();
-
-            switch (option) {
-                case 0:
-                    Menu.mainMenu();
-                    break;
-                case 1:
-                    Book.issueBookByIsbn();
-                    break;
-            }
-        }
-
-        System.out.println("The book you rented is returned! Thank you!");
-        System.out.println("Press 0 to return to our main menu");
-        int option = scanner.nextInt();
-        switch (option) {
-            case 0:
-                Menu.mainMenu();
-                break;
+        } else {
+            Menu.clientMenu();
         }
     }
-
-     */
 
     public static void searchBooksByIsbn() {
         Scanner scanner = new Scanner(System.in);
@@ -350,6 +271,8 @@ public class Book {
             int choice = scanner.nextInt();
             if (choice == 0) {
                 System.exit(0);
+            } else {
+                Menu.clientMenu();
             }
         }
     }
@@ -376,6 +299,8 @@ public class Book {
             int choice = scanner.nextInt();
             if (choice == 0) {
                 System.exit(0);
+            } else {
+                Menu.clientMenu();
             }
         }
     }
@@ -385,7 +310,7 @@ public class Book {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter your id:");
-        int client_id = scanner.nextInt();
+        int id = scanner.nextInt();
 
         System.out.println("Enter a book isbn to check if it's available:");
         int bk = scanner.nextInt();
@@ -396,51 +321,55 @@ public class Book {
         session.beginTransaction();
         Transaction trans = session.getTransaction();
         Book book = session.get(Book.class, bk);
-        Client client = session.get(Client.class, client_id);
-        List<Rent> rents = session.createQuery("from rent").list();
-        for (Rent rent : rents) {
-            if (rent.getBook().getB_id() == bk && rent.isReturned() == true) {
-                System.out.println("You have already rented this book and haven't returned it yet. Please return the book before renting it again.");
-                return;
-            }
-        }
-            if (book.isBookAvailable(qty)) {
-                try {
-                    Rent rent1 = new Rent();
-                    rent1.setBook(book);
-                    rent1.setIssueDate(Timestamp.valueOf(Rent.issueDate()));
-                    rent1.setDueDate(Timestamp.valueOf(Rent.dueDate()));
-                    rent1.setClient(client);
-                    rent1.setReturned(false);
-                    session.merge(client);
-                    session.merge(book);
-                    session.merge(rent1);
-                    session.flush();
-                    trans.commit();
-                    DateReminder.sendReminder("Due date reminder message!", client.getEmail());
+        Client client = session.get(Client.class, id);
 
-                } catch (Exception e) {
-                    System.out.println("Something went wrong. Try again or go back to the main menu");
-                    System.out.println("Press 1 to start again or 0 to go back to the main menu");
-                    int option = scanner.nextInt();
+        if (book.isBookAvailable(qty)) {
+            try {
+                Rent rent = new Rent();
+                rent.setBook(book);
+                rent.setIssueDate(Timestamp.valueOf(Rent.issueDate()));
+                rent.setDueDate(Timestamp.valueOf(Rent.dueDate()));
+                rent.setClient(client);
+                rent.setReturned(false);
+                session.merge(client);
+                session.merge(book);
+                session.merge(rent);
+                session.flush();
+                trans.commit();
+                DateReminder.sendReminder("Due date reminder message!", client.getEmail());
 
-                    switch (option) {
-                        case 0:
-                            Menu.mainMenu();
-                            break;
-                        case 1:
-                            Book.issueBookByIsbn();
-                            break;
-                    }
+            } catch (Exception e) {
+                System.out.println("Something went wrong. Try again or go back to the main menu");
+                System.out.println("Press 1 to start again or 0 to go back to the main menu");
+                int option = scanner.nextInt();
+
+                switch (option) {
+                    case 0:
+                        Menu.mainMenu();
+                        break;
+                    case 1:
+                        Book.issueBookByIsbn();
+                        break;
                 }
             }
-            System.out.println("The book you rented is: " + book);
-            Menu.clientMenu();
+        } else {
+            System.out.println("This book is not available at the moment. Come back later.");
+            System.out.println("You can press 1 to rent another book or 0 to go back to the main menu");
+            int option = scanner.nextInt();
 
+            switch (option) {
+                case 0:
+                    Menu.mainMenu();
+                    break;
+                case 1:
+                    Book.issueBookByIsbn();
+                    break;
             }
-
         }
-
+        System.out.println("The book you rented is: " + book);
+        Menu.clientMenu();
+    }
+}
 
 
 

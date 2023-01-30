@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Scanner;
 
 @Entity(name = "rent")
 @Data
@@ -27,7 +28,7 @@ public class Rent {
     private int r_id;
 
     @OneToOne
-    @JoinColumn (name = "isbn")
+    @JoinColumn(name = "isbn")
     private Book book = new Book();
 
     @Column(name = "issue_date")
@@ -36,13 +37,9 @@ public class Rent {
     @Column(name = "due_date")
     private Timestamp dueDate;
 
-
     @OneToOne
     @JoinColumn(name = "client_id")
     private Client client = new Client();
-
-    // @Column(name = "client_id", updatable = false, insertable = false) //Or correct column
-    //private int clientId;
 
     @Column(name = "isreturned")
     private boolean isReturned;
@@ -55,12 +52,7 @@ public class Rent {
         this.isReturned = isReturned;
     }
 
-
-
     static Session session = Database.getHibSesh();
-
-    // The system should keep track of the due dates for books and
-    // send reminders to users when a book is due soon.
 
     public static String dueDate() {
         //Date today = new Date();
@@ -69,7 +61,6 @@ public class Rent {
         c.add(Calendar.DATE, 14);  // number of days to add
         String dueDate = (String) (formattedDate.format(c.getTime()));
         System.out.println("Your due date is: " + dueDate);
-
 
         return dueDate;
     }
@@ -80,7 +71,6 @@ public class Rent {
         Calendar c = Calendar.getInstance();
         String issueDate = (String) (formattedDate.format(c.getTime()));
         System.out.println("Your issue date is: " + issueDate);
-
 
         return issueDate;
     }
@@ -118,5 +108,26 @@ public class Rent {
         System.out.println("Thank you for viewing the list!");
     }
 
+    public static void deleteRentByAdmin() {
 
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Hello, please enter rent's ID:");
+        int id = scanner.nextInt();
+        System.out.println("Rent with the inserted id will be deleted. Please hold for further information...");
+
+        session.beginTransaction();
+        Transaction trans = session.getTransaction();
+        Rent rent = session.get(Rent.class, id);
+
+        try {
+            session.get(Client.class, id);
+            session.delete(rent);
+            session.flush();
+            trans.commit();
+        } catch (Exception e) {
+            trans.rollback();
+            e.printStackTrace();
+        }
+        System.out.println("Rent with the id: " +id+ "is deleted. Thank you!");
+    }
 }

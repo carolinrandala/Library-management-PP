@@ -66,7 +66,7 @@ public class Client {
             trans.rollback();
             e.printStackTrace();
         }
-        System.out.println("Thank you for update! Please be mindful that client's new name is: " +name+ "and client's new email is: " +email);
+        System.out.println("Thank you for update! Please be mindful that client's new name is: " + name + "and client's new email is: " + email);
     }
 
     public static void deleteClientByAdmin() {
@@ -89,7 +89,7 @@ public class Client {
             trans.rollback();
             e.printStackTrace();
         }
-        System.out.println("Client with the id: " +id+ "is deleted. Thank you!");
+        System.out.println("Client with the id: " + id + "is deleted. Thank you!");
     }
 
     public static void listClient() {
@@ -123,20 +123,16 @@ public class Client {
         Client client = new Client();
 
         try {
-
             client.setName(name);
             client.setEmail(email);
             session.persist(client);
             session.flush();
             trans.commit();
-
         } catch (Exception e) {
             trans.rollback();
             e.printStackTrace();
         }
-
         System.out.println("Thank you for registration! Please be mindful that your id for this library is:" + session.get(Client.class, client.getC_id()));
-
     }
 
     public static void addNewClientByAdmin() {
@@ -160,14 +156,11 @@ public class Client {
             session.persist(client);
             session.flush();
             trans.commit();
-
         } catch (Exception e) {
             trans.rollback();
             e.printStackTrace();
         }
-
         System.out.println("Thank you for registration! Please be mindful that client's id for this library is:" + session.get(Client.class, client.getC_id()));
-
     }
 
     public static void listOfRentedBooksByClientId() {
@@ -189,7 +182,6 @@ public class Client {
             }
             session.getTransaction().commit();
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -204,12 +196,12 @@ public class Client {
 
         String password = scanner.nextLine();
 
-        if(password.equals("greenlibrary123")) {
+        if (password.equals("greenlibrary123")) {
             Menu.adminMenu();
         } else {
             System.out.println("Sorry, the password is wrong.");
+            System.out.println("-----------------------------");
         }
         Menu.mainMenu();
     }
 }
-

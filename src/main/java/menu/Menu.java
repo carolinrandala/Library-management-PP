@@ -1,5 +1,9 @@
 package menu;
 
+import entities.Book;
+import entities.Client;
+import entities.Rent;
+
 import java.util.Scanner;
 /**
  * Menu for library management system
@@ -11,8 +15,7 @@ public class Menu {
         System.out.println("Welcome to the library!");
         System.out.println("Pick a role to continue: ");
         System.out.println("1. Client");
-        System.out.println("2. Admin"); //Sisselogimine?
-
+        System.out.println("2. Admin");
         System.out.println("-----------------");
         System.out.println("Select an option: ");
         int option = scanner.nextInt();
@@ -22,8 +25,7 @@ public class Menu {
                 clientMenu();
                 break;
             case 2:
-                //siia sisselogimise meetod ja siis seal callime seda adminMenu kui sisselogimine on õnnestunud
-                adminMenu();
+                Client.adminLogin();
                 break;
             case 3:
                 break;
@@ -37,12 +39,13 @@ public class Menu {
 
     public static void clientMenu() {
         System.out.println("Pick a submenu to continue: ");
-        System.out.println("1. List of the books in the library");
-        System.out.println("2. Issue book"); // Carolin checkBook(); OK
-        System.out.println("3. Return book");
-        System.out.println("4. View all your rented books"); // Client.listOfRentedBooksByClientId(); OK
-        System.out.println("5. Exit");
-
+        System.out.println("1. Sign up");
+        System.out.println("2. List of the books by ISBN");
+        System.out.println("3. List of the books by title");
+        System.out.println("4. Issue book");
+        System.out.println("5. Return book");
+        System.out.println("6. View all your rented books");
+        System.out.println("7. Exit");
 
         System.out.println("-----------------");
         System.out.println("Select an option or enter 0 to go back to change the role: ");
@@ -53,24 +56,33 @@ public class Menu {
                 mainMenu();
                 break;
             case 1:
-                //Book.listOfBooks();
+                Client.addNewClientByClient();
                 clientMenu();
                 break;
             case 2:
-                // Book.rentBookWithIsbn();
-                // Book.rentBookWithTitle();
+                Book.searchBooksByIsbn();
                 clientMenu();
                 break;
             case 3:
-                // Book.returnBookWithIsbn();
-                // Book.returnBookWithTitle();
+                Book.searchBooksByTitle();
                 clientMenu();
                 break;
             case 4:
-                // Book.getRentedBooks();
+                Book.issueBookByIsbn();
                 clientMenu();
                 break;
             case 5:
+                Book.returnBookByIsbn();
+                clientMenu();
+                break;
+            case 6:
+                Client.listOfRentedBooksByClientId();
+                clientMenu();
+                break;
+            case 7:
+                System.out.println("Thank You for visiting our library!");
+                System.out.println("-----------------------------------");
+                mainMenu();
                 break;
             default:
                 System.out.println("Invalid option!");
@@ -79,19 +91,18 @@ public class Menu {
         }
     }
 
-    public static void adminMenu() { //Kätlin
+    public static void adminMenu() {
         System.out.println("Pick a submenu to continue: ");
-        System.out.println("1. Add a book"); // addBook(); OK aga äkki peaks kuidagi vaatama kas autor eksisteerib
-        System.out.println("2. Update a book"); // updateBook(); OK
-        System.out.println("3. Delete a book"); // deleteBook(); OK
-        System.out.println("4. Add new user"); // addClientByAdmin(); OK
-        System.out.println("5. Update user");  //updateClientByAdmin(); OK
-        System.out.println("6. Delete user"); //deleteClientByAdmin(); OK
-        System.out.println("7. View list of books"); //listBook(); OK
-        System.out.println("8. View list of rented books"); // listOfRentedBooks(); OK
-        System.out.println("9. Exit"); //mainMenu(); OK
-
-
+        System.out.println("1. Add a book");
+        System.out.println("2. Update a book");
+        System.out.println("3. Delete a book");
+        System.out.println("4. Add new user");
+        System.out.println("5. Update user");
+        System.out.println("6. Delete user");
+        System.out.println("7. Delete rent by admin");
+        System.out.println("8. View list of books");
+        System.out.println("9. View list of rented books");
+        System.out.println("10. Exit");
 
         System.out.println("-----------------");
         System.out.println("Select an option or enter 0 to go back to change the role: ");
@@ -102,42 +113,45 @@ public class Menu {
                 mainMenu();
                 break;
             case 1:
-                // Book.addNewBook();
+                Book.addBook();
                 adminMenu();
                 break;
             case 2:
-                // Book.updateBook();
+                Book.updateBook();
                 adminMenu();
                 break;
             case 3:
-                // Book.deleteBook();
+                Book.deleteBook();
                 adminMenu();
                 break;
             case 4:
-                // Client.addNewUser();
+                Client.addNewClientByAdmin();
                 adminMenu();
                 break;
             case 5:
-                // Client.updateClient();
+                Client.updateClientByAdmin();
                 adminMenu();
                 break;
             case 6:
-                // Client.deleteClient();
+                Client.deleteClientByAdmin();
                 adminMenu();
                 break;
             case 7:
-                // Books.listOfBooks();
+                Rent.deleteRentByAdmin();
                 adminMenu();
                 break;
             case 8:
-                // Rent.listOfRentedBooks();
+                Book.listBook();
                 adminMenu();
                 break;
             case 9:
-                // Client.listOfClients();
+                Rent.listOfRentedBooks();
                 adminMenu();
                 break;
             case 10:
+                System.out.println("Bye!");
+                System.out.println("----");
+                mainMenu();
                 break;
             default:
                 System.out.println("Invalid option!");
@@ -145,5 +159,4 @@ public class Menu {
                 break;
         }
     }
-
 }

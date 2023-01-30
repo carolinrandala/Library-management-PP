@@ -22,13 +22,11 @@ public class Author {
     @Column(name = "author_name")
     private String authorName;
 
-
     public Author(String authorName) {
         this.authorName = authorName;
     }
 
     static Session session = Database.getHibSesh();
-
 
     public static void listAuthor() {
 
